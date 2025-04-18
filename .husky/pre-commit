@@ -7,7 +7,7 @@ CHANGED_FILES=$(git diff --name-only HEAD)
 echo "$CHANGED_FILES"
 
 # 변경된 파일이 있는 프로젝트 찾기 (projects와 core 모두)
-CHANGED_PROJECTS=$(echo "$CHANGED_FILES" | grep -o '\(projects\|core\)/[^/]*' | sort -u)
+CHANGED_PROJECTS=$(echo "$CHANGED_FILES" | grep -o '\(apps\|packages\)/[^/]*' | sort -u)
 
 if [ -n "$CHANGED_PROJECTS" ]; then
   echo "변경된 프로젝트:"
