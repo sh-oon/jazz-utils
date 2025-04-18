@@ -8,6 +8,7 @@
 		"build": "next build",
 		"start": "next start",
 		"lint": "next lint --max-warnings 0",
+		"format": "next lint --fix",
 		"check-types": "tsc --noEmit",
 		"prepare": "husky install"
 	},
@@ -20,10 +21,10 @@
 	"devDependencies": {
 		"@jazz/eslint-config": "*",
 		"@jazz/typescript-config": "*",
-		"@types/node": "^22.14.0",
-		"@types/react": "19.1.0",
-		"@types/react-dom": "19.1.1",
-		"eslint": "^9.24.0",
-		"typescript": "5.8.2"
+		"@types/node": "*",
+		"@types/react": "*",
+		"@types/react-dom": "*",
+		"eslint": "*",
+		"typescript": "*"
 	}
 }

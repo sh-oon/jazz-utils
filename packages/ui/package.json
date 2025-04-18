@@ -8,6 +8,7 @@
 	"scripts": {
 		"lint": "eslint . --max-warnings 0",
 		"generate:component": "turbo gen react-component",
+		"format": "next lint --fix",
 		"check-types": "tsc --noEmit",
 		"prepare": "husky install"
 	},
@@ -19,6 +20,7 @@
 		"@types/react": "19.1.0",
 		"@types/react-dom": "19.1.1",
 		"eslint": "^9.24.0",
+		"prettier": "*",
 		"typescript": "5.8.2"
 	},
 	"dependencies": {
