@@ -1,0 +1,22 @@
+#!/bin/sh
+
+# 머지 커밋인지 확인
+if grep -q "^Merge " "$1"; then
+  echo "🔄 머지 커밋 감지: 컨벤션 체크 스킵"
+  exit 0
+fi
+
+COMMIT_MESSAGE_FILE=$1
+COMMIT_MESSAGE=$(cat "$COMMIT_MESSAGE_FILE")
+
+# 현재 브랜치 이름 가져오기
+BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+
+# 브랜치명으로 시작하는지 확인
+if ! echo "$COMMIT_MESSAGE" | grep -qE "^$BRANCH_NAME: "; then
+  echo "커밋 메시지는 브랜치명으로 시작해야 합니다"
+  echo "예시: $BRANCH_NAME: 커밋 메시지"
+  exit 1
+fi
+
+echo "🔆 Thanks for keeping the convention 🔆"

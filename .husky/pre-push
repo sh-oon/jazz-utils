@@ -1,0 +1,9 @@
+#!/bin/bash
+
+echo "🔍 타입 체크 중..."
+turbo check-types
+echo "✅ 타입 체크 완료"
+
+echo "🧹 전체 린트 검사 중..."
+turbo lint
+echo "✅ 린트 검사 완료"

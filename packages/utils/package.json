@@ -1,5 +1,5 @@
 {
-	"name": "@jazz/ui",
+	"name": "@jazz/utils",
 	"version": "0.0.0",
 	"private": true,
 	"exports": {

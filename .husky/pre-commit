@@ -1,0 +1,48 @@
+echo "🔍 commit 이전에 lint 규칙을 적용합니다..."
+
+#!/bin/bash
+
+# 변경된 파일 목록 가져오기
+CHANGED_FILES=$(git diff --name-only HEAD)
+echo "$CHANGED_FILES"
+
+# 변경된 파일이 있는 프로젝트 찾기 (projects와 core 모두)
+CHANGED_PROJECTS=$(echo "$CHANGED_FILES" | grep -o '\(projects\|core\)/[^/]*' | sort -u)
+
+if [ -n "$CHANGED_PROJECTS" ]; then
+  echo "변경된 프로젝트:"
+  echo "$CHANGED_PROJECTS"
+  # 변경된 프로젝트의 이름 추출
+  PROJECT_NAMES=""
+  for project_path in $CHANGED_PROJECTS; do
+    if [ -f "$project_path/package.json" ]; then
+      # package.json에서 name 필드 추출
+      project_name=$(grep -o '"name": *"[^"]*"' "$project_path/package.json" | cut -d'"' -f4)
+      if [ -n "$project_name" ]; then
+        echo "프로젝트 이름: $project_name"
+        PROJECT_NAMES="$PROJECT_NAMES $project_name"
+      else
+        echo "경고: $project_path에서 프로젝트 이름을 찾을 수 없습니다."
+      fi
+    else
+      echo "경고: $project_path에 package.json 파일이 없습니다."
+    fi
+  done
+  
+  # 추출된 프로젝트 이름 출력
+  if [ -n "$PROJECT_NAMES" ]; then
+    echo "변경된 모든 프로젝트 이름: $PROJECT_NAMES"
+  fi
+
+  # 각 변경된 프로젝트에 대해 turbo lint 실행
+  echo "모든 변경된 프로젝트에 대해 lint 실행 중..."
+  if [ -n "$PROJECT_NAMES" ]; then
+    FILTER_ARGS=""
+    for project in $PROJECT_NAMES; do
+      FILTER_ARGS="$FILTER_ARGS --filter=\"$project\""
+    done
+    eval "turbo format $FILTER_ARGS"
+  fi
+else
+  echo "변경된 프로젝트가 없습니다."
+fi
