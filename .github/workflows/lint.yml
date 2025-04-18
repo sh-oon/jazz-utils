@@ -1,0 +1,63 @@
+name: Lint
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Get changed files
+      id: changed-files
+      uses: tj-actions/changed-files@v42
+      
+    - name: Run lint on changed projects
+      run: |
+        CHANGED_FILES="${{ steps.changed-files.outputs.all_changed_files }}"
+        CHANGED_PROJECTS=$(echo "$CHANGED_FILES" | grep -o '\(projects\|core\)/[^/]*' | sort -u)
+        
+        if [ -n "$CHANGED_PROJECTS" ]; then
+          echo "변경된 프로젝트:"
+          echo "$CHANGED_PROJECTS"
+          
+          PROJECT_NAMES=""
+          for project_path in $CHANGED_PROJECTS; do
+            if [ -f "$project_path/package.json" ]; then
+              project_name=$(node -p "require('./$project_path/package.json').name")
+              if [ -n "$project_name" ]; then
+                echo "프로젝트 이름: $project_name"
+                PROJECT_NAMES="$PROJECT_NAMES $project_name"
+              else
+                echo "경고: $project_path에서 프로젝트 이름을 찾을 수 없습니다."
+              fi
+            else
+              echo "경고: $project_path에 package.json 파일이 없습니다."
+            fi
+          done
+          
+          if [ -n "$PROJECT_NAMES" ]; then
+            echo "변경된 모든 프로젝트 이름: $PROJECT_NAMES"
+            FILTER_ARGS=""
+            for project in $PROJECT_NAMES; do
+              FILTER_ARGS="$FILTER_ARGS --filter=\"$project\""
+            done
+            eval "npx turbo format $FILTER_ARGS"
+          fi
+        else
+          echo "변경된 프로젝트가 없습니다."
+        fi 
